@@ -1,0 +1,13 @@
+[{
+	id : 123412
+	jaratid: 12345
+	fo: 23
+	szallodaid: 0
+	szobaids: []
+	szallodafrom: date
+	szallodato: date
+	autoids: []
+	autofrom: date
+	autoto: date
+}, {
+}]

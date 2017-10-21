@@ -1,0 +1,13 @@
+{
+	"id" : 1,
+	"name" : "Hotelxzy"
+	"rooms" : [
+		{
+			"size" : 4,
+			"price" : 21432},
+		{
+			"size" : 2,
+			"price" : 342223},
+		}
+	]
+}

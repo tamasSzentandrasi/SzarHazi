@@ -1,0 +1,10 @@
+[{
+	"id" : 1,
+	"name" : "AsdTown",
+	"country" : "Asdia",
+	"hotels" : [1,2,3,4],
+	"cars" : [1,23,45,12],
+}, {
+
+}
+]
