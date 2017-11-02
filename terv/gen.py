@@ -147,15 +147,14 @@ class SzarWorldGenerator():
 				idCounter = idCounter + 1
 		pathres = path + "cities.json"
 		open(pathres, 'w').close()  
+		addedCities = []
+		addedCountries = []
+		WcityCountryDict ={}
 		with open(pathres,'w') as file: 
 			cityCounter = self.Cities
 			file.write("[\n")
 			idCounter = 1
-			remainingCities = self.CityNames[:]
-			for city in self.CityNames:
-				for cityTwo in self.CityNames:
-					if (str(city) != str(cityTwo)):
-						
+			remainingCities = self.CityNames[:]		
             startList = True
 			for city in self.CityNames:
 				if not startList:
@@ -167,8 +166,11 @@ class SzarWorldGenerator():
 				idCounter = idCounter + 1
 				chosenCity = np.random.choice(remainingCities)
 				remainingCities.remove(chosenCity)
+				addedCities = addedCities | [chosenCity]
 				file.write("\t\t\"name\" : \"" + str(chosenCity) + "\",\n"
 				chosenCountry = np.random.choice(self.CountryNames)
+				addedCountries  = addedCountries | [chosenCountry]
+				WcityCountryDict.update({chosenCity : chosenCountry})
 				file.write("\t\t\"country\" : \"" + str(chosenCountry) + "\",\n")
 				file.write("\"hotels\" : [")
 				startList2 = True
@@ -188,6 +190,17 @@ class SzarWorldGenerator():
 						startList2 = False
 					file.write(str(carId))
 				file.write("]\n\t}")
+		squareSize = int(np.sqrt(len(addedCountries))) + 1
+		for city in addedCities:
+			country_x = addedCountries.index(WcityCountryDict.get(city)) % squareSize
+			country_y = int(addedCountries.index(WcityCountryDict.get(city)) / squareSize)
+			x = np.random.randint(1,100)
+			y = np.random.randint(1,100)
+			
+		for city in addedCities:
+			for cityTwo in addedCities:
+				if (str(city) != str(cityTwo)):
+					
 '''{
 	"id" : 467
 	"from" : "asdTown"
