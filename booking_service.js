@@ -284,8 +284,11 @@ module.exports = function booking_service(options) {
   })
   
   this.add('role:book,cmd:query,reservation:true', function query(msg, respond) {
-	  this.make( 'reservation' ).load$( msg.reserve_num, reservation_answer )
-	  respond(null, {answer:reservation_answer })
+	  queried_result = []
+	  this.make('reservations').list$({reservation_id: msg.reservation_id}, function (err, list)  {
+		  queried_result = list
+	  }
+	  respond(null, queried_result)
   })
   
   //this.add('role:book,cmd:query,reservation:true,date:true', function query(msg, respond) {
@@ -316,6 +319,18 @@ module.exports = function booking_service(options) {
     this.prior(msg, respond)
   })
   
+  function my_slice(given_list, already_chosen) {
+		queried_list = []
+		for (i = 0; i< given_list.length; i++) {
+			for (j = 0; j < already_chosen.length; j++) {
+				if (i.car_id == j.car_id) {
+					queried_list.push(i)
+				}
+			}
+		}
+		return queried_list
+	}
+	
   require('seneca')().client({ type: 'tcp', pin: 'role:car_service' })
 					 .client({ type: 'tcp', pin: 'role:hotel_service' })
 					 .client({ type: 'tcp', pin: 'role:flight_service' })
