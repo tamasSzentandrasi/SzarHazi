@@ -28,9 +28,9 @@ def randomDate(start, end, prop):
 '''
 class SzarWorldGenerator():
 	def __init__(self, cities, cityNames, countryNames, hotelNames, hotelTypes, hotelsInCityRange, connectivity, density,
-		cartypes, carsizes, carprices, priceRangeDict, hotelSizeRange, hotelStarPriceDict):
+		cartypes, carsizes, carprices, hotelSizeRange, hotelStarPriceDict):
 			self.Cities = cities
-			self.CityNames = citynames
+			self.CityNames = cityNames
 			self.CountryNames = countryNames
 			self.Connectivity = connectivity
 			self.Density = density
@@ -40,10 +40,10 @@ class SzarWorldGenerator():
 			self.HotelNames = hotelNames
 			self.HotelTypes = hotelTypes
 			self.HotelsInCityRange = hotelsInCityRange
-			self.PriceRangeDict = priceRangeDict
 			self.HotelSizeRange = hotelSizeRange
 			self.HotelStarPriceDict = hotelStarPriceDict
-    def generateJSON(self, path):
+    
+	def generateJSON(self, path):
 		pathres = path + "cars.json"
 		open(pathres, 'w').close()
 		numberGenerated = 0
@@ -72,17 +72,17 @@ class SzarWorldGenerator():
 			file.write("[\n")
 			idCounter = 1
 			startList = True
-			while numberGenerated > -1:
-				if not startList:
-					file.write(",\n\t{\n")
-				else:
-					file.write("\t{\n")
-					startList = False
-				file.write("\t\t\"id\" : " + str(idCounter) + ",\n")			
-				file.write("\t\t\"type\" : \"" + str(WcarTypesDict.get(idCounter)) + "\",\n")
-				file.write("\t\t\"type\" : \"" + str(self.CarSizeDict.get(WcarTypesDict.get(idCounter))) + "\",\n")
-				file.write("\t\t\"price\" : " + str(self.CarPrices.get(WcarTypesDict.get(idCounter)) * (np.random.random() + 0.5)) + "\n\t}")
-				idCounter = idCounter + 1
+			for car in carList:
+				if (self.CarPrices.get(WcarTypesDict.get(car))):
+					if not startList:
+						file.write(",\n\t{\n")
+					else:
+						file.write("\t{\n")
+						startList = False
+					file.write("\t\t\"id\" : " + str(car) + ",\n")			
+					file.write("\t\t\"type\" : \"" + str(WcarTypesDict.get(car)) + "\",\n")
+					file.write("\t\t\"size\" : \"" + str(self.CarSizeDict.get(WcarTypesDict.get(car))) + "\",\n")
+					file.write("\t\t\"price\" : " + str(int(self.CarPrices.get(WcarTypesDict.get(car)) * (np.random.random() + 0.5))) + "\n\t}")
 		pathres = path + "hotels.json"
 		open(pathres, 'w').close()
 		numberGenerated = 0
@@ -111,13 +111,13 @@ class SzarWorldGenerator():
 			file.write("[\n")
 			idCounter = 1
 			startList = True
-			while numberGenerated > -1:
+			for hotel, city in WcityHotelDict.items():
 				if not startList:
 					file.write(",\n\t{\n")
 				else:
 					file.write("\t{\n")
 					startList = False
-				file.write("\t\t\"id\" : " + str(idCounter) + ",\n")
+				file.write("\t\t\"id\" : " + str(hotel) + ",\n")
 				includesCityNameRAND = np.random.random()
 				includesCityName = False
 				if includesCityNameRAND > np.random.random():
@@ -125,9 +125,9 @@ class SzarWorldGenerator():
 				chosenHotel = np.random.choice(self.HotelNames)
 				chosenType = np.random.choice(self.HotelTypes)
 				if includesCityName:
-					file.write("\t\t\"name\" : \"" + str(WcityHotelDict.get(idCounter)) + " " + str(chosenHotel) + " " + str(chosenType) + "\",\n"
+					file.write("\t\t\"name\" : \"" + str(WcityHotelDict.get(hotel)) + " " + str(chosenHotel) + " " + str(chosenType) + "\",\n")
 				else:
-					file.write("\t\t\"name\" : \""  + str(chosenHotel) + " " + str(chosenType) + "\",\n"
+					file.write("\t\t\"name\" : \""  + str(chosenHotel) + " " + str(chosenType) + "\",\n")
 				numberOfRooms = np.random.randint(self.HotelSizeRange[0], self.HotelSizeRange[1])
 				roomCounter = numberOfRooms + 1
 				startList2 = True
@@ -140,8 +140,9 @@ class SzarWorldGenerator():
 						file.write(",\n\t\t\t{\n")
 					roomSize = np.random.randint(1,6)
 					priceRange = np.random.random() + 0.5
-					file.write("\t\t\t\t\"size\" : " + roomSize + ",\n")
-					file.write("\t\t\t\t\"price\" : " + int(priceRange * roomSize * self.HotelStarPriceDict.get(HotelStarDict.get(idCounter))) + "\n\t\t\t}"
+					file.write("\t\t\t\t\"size\" : " + str(roomSize) + ",\n")
+					file.write("\t\t\t\t\"price\" : " + str(int(priceRange * roomSize * self.HotelStarPriceDict.get(HotelStarDict.get(hotel)))) + "\n\t\t\t}")
+					roomCounter = roomCounter - 1
 				file.write("\n\t\t]\n")
 				file.write("\t}")
 				idCounter = idCounter + 1
@@ -155,7 +156,9 @@ class SzarWorldGenerator():
 			file.write("[\n")
 			idCounter = 1
 			remainingCities = self.CityNames[:]		
-            startList = True
+			startList = True
+			addedCities = []
+			addedCountries = []
 			for city in self.CityNames:
 				if not startList:
 					file.write(",\n\t{\n")
@@ -166,13 +169,13 @@ class SzarWorldGenerator():
 				idCounter = idCounter + 1
 				chosenCity = np.random.choice(remainingCities)
 				remainingCities.remove(chosenCity)
-				addedCities = addedCities | [chosenCity]
-				file.write("\t\t\"name\" : \"" + str(chosenCity) + "\",\n"
+				addedCities.append(chosenCity)
+				file.write("\t\t\"name\" : \"" + str(chosenCity) + "\",\n")
 				chosenCountry = np.random.choice(self.CountryNames)
-				addedCountries  = addedCountries | [chosenCountry]
+				addedCountries.append(chosenCountry)
 				WcityCountryDict.update({chosenCity : chosenCountry})
 				file.write("\t\t\"country\" : \"" + str(chosenCountry) + "\",\n")
-				file.write("\"hotels\" : [")
+				file.write("\t\t\"hotels\" : [")
 				startList2 = True
 				for hotelId in WhotelCityDict.get(city):
 					if not startList2:
@@ -181,7 +184,7 @@ class SzarWorldGenerator():
 						startList2 = False
 					file.write(str(hotelId))
 				file.write("],\n")
-				file.write("\"cars\" : [")
+				file.write("\t\t\"cars\" : [")
 				startList2 = True
 				for carId in ArrayCarCityDict.get(city):
 					if not startList2:
@@ -189,37 +192,13 @@ class SzarWorldGenerator():
 					else:
 						startList2 = False
 					file.write(str(carId))
-				file.write("]\n\t}")
+				file.write("]\n\t}\n]")
 		squareSize = int(np.sqrt(len(addedCountries))) + 1
 		for city in addedCities:
 			country_x = addedCountries.index(WcityCountryDict.get(city)) % squareSize
 			country_y = int(addedCountries.index(WcityCountryDict.get(city)) / squareSize)
 			x = np.random.randint(1,100)
-			y = np.random.randint(1,100)
-			
-		for city in addedCities:
-			for cityTwo in addedCities:
-				if (str(city) != str(cityTwo)):
-					
-'''{
-	"id" : 467
-	"from" : "asdTown"
-	"to" : "dsaTown"
-	"date" : "6666:66:6"
-	"freespace" : 8
-	"seats" : [
-		[
-			[1231321,1231213,0,0],
-			[0,0,0,0],
-			[0,0,54532,1341]
-		],
-		[
-		]
-	],
-	"price" : 123
-	
-}'''
-		
+			y = np.random.randint(1,100)				
 		pathres = path + "routes.json"
 		open(pathres, 'w').close()  
 		with open(pathres,'w') as file: 
@@ -235,24 +214,72 @@ class SzarWorldGenerator():
 				for cityTwo in workingWith:
 					if (str(city) != str(cityTwo)):
 						data = []
-						data.append(city)
-						data.append(cityTwo)
-						Nroutes.update({data:[]})
-			while True:
-				cityOne = np.random.choice(workingWith)
-				workingWith.remove(cityOne)
-				cityTwo = np.random.choice(workingWith)
-				data = []
-				data.append(cityOne)
-				data.append(cityTwo)
-				asd = Nroutes.get(data)
-				if len(asd) < self.Connectivity:
-					asd.append(idCounter)
-					data.append(randomDate("1/1/2017 1:30 PM", "12/31/2017 4:50 AM", random.random())
-					levelnum = np.random.randint(1,3)
-					rownum = np.random.randint(20, 101)
-					colnum = np.random.randint(4,11)
-					price = int((1/(np.random.randint(4,8) * levelnum * rownum * colnum))*400000)
-print(levelnum, rownum, colnum, price)
-				Nroutes.update({
-				routes.update({idCounter : data})
+						key = str(city) + str(cityTwo)
+						Nroutes.update({key:data})
+			count = (self.Cities * self.Connectivity)* self.Connectivity
+			while count > 0:
+				if not len(workingWith) < 3:	
+					cityOne = np.random.choice(workingWith)
+					workingWith.remove(cityOne)
+					cityTwo = np.random.choice(workingWith)
+					data = []
+					key = str(city) + str(cityTwo)
+					asd = []
+					asd = Nroutes.get(key)
+					startStart = True
+					if len(asd) < self.Connectivity:
+						if (startStart):
+							startStart = False
+						else:
+							file.write(",\n")
+						asd.append(idCounter)
+						startTime = randomDate("1/1/2017 1:30 PM", "12/31/2017 4:50 AM", random.random())
+						levelnum = np.random.randint(1,3)
+						rownum = np.random.randint(20, 101)
+						colnum = np.random.randint(4,11)
+						initial_free_space = levelnum*rownum*colnum
+						price = int((1/(np.random.randint(4,8) * levelnum * rownum * colnum))*400000)
+						Nroutes.update({key: asd})
+						routes.update({idCounter : [city, cityTwo]})
+						file.write("\t{\n")
+						file.write("\t\t\"id\" : " + str(idCounter) + ",\n")
+						file.write("\t\t\"from\" : " + str(city) + ",\n")
+						file.write("\t\t\"to\" : " + str(cityTwo) + ",\n")
+						file.write("\t\t\"date\" : " + str(startTime) + ",\n")
+						file.write("\t\t\"freespace\" : " + str(initial_free_space) + ",\n")
+						file.write("\t\t\"seats\" : [\n")
+						idCounter = idCounter + 1
+						level_counter = levelnum
+						startList = True
+						while level_counter > -1:
+							if (startList):
+								startList = False
+								file.write("\t\t[")
+							else:
+								file.write(",\n\t\t[")
+							row_counter = rownum
+							startList2 = True
+							while row_counter > -1:
+								if (startList2):
+									file.write("\n\t\t\t\t[")
+									startList2 = False
+								else:
+									file.write(",\n\t\t\t\t[")
+								col_counter = colnum
+								startList3 = True
+								while col_counter > -1:
+									if (startList3):
+										startList3 = False
+									else:
+										file.write(",")
+									file.write(str(0))
+									col_counter = col_counter -1
+								file.write("]")
+								row_counter = row_counter - 1
+							file.write("\n\t\t]")
+							level_counter = level_counter -1
+						file.write("\n\t\t],\n\t\t\"price\" : " + str(price) + "\n\t}")
+						count = count - 1
+				else:
+					break
+			file.write("\n]")
