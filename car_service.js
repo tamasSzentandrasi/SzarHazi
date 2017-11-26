@@ -3,12 +3,12 @@ module.exports = function car_service(options) {
 		this.make( 'car' ).load$(msg.car_id, function( err, chosen_car) {
 			if( err ) return respond( false )
 						
-			if (!(chosen_car.size < msg.reservation_count) && get_ready_state(chosen_car, msg.datetime)) 
+			if (!(chosen_car.size < msg.reservation_count) && get_ready_state(chosen_car, msg.datetime))  {
 					this.make('reservations')
 						.data$({
-								car_id: chosen_car
-								res_from: msg.from
-								res_to: msg.to
+								car_id: chosen_car,
+								res_from: msg.from,
+								res_to: msg.to,
 								reservation_id: msg.reservation_id
 						})
 						.save$( function( err, response) {
@@ -18,17 +18,16 @@ module.exports = function car_service(options) {
 				} else {
 					return respond( false )
 				}
-			}
-		}
-	}
+		})
+	})
 	this.add('role:car,cmd:add', function(msg, respond) {
 		this
 			.make( 'car' )
 			.data$({
-				car_id: msg.car_id
-				car_type: msg.car_type
-				city: msg.city
-				size: msg.size
+				car_id: msg.car_id,
+				car_type: msg.car_type,
+				city: msg.city,
+				size: msg.size,
 				price: msg.price
 			})
 			.save$( function( err, response) {
@@ -38,19 +37,19 @@ module.exports = function car_service(options) {
 			})
 	})
 	this.add('role:car,cmd:remove', function(msg, respond) {
-		this.make('car').remove#(msg.car_id, respond)
+		this.make('car').remove$(msg.car_id, respond)
 	})
 	this.add('role:car,cmd:query', function(msg, respond) {
 		var queried_results = []
 		if (typeof msg.city != "undefined") {
 			this.make('car').list$({city: msg.city}, function (err, list)  {
 				queried_results = my_slice(list, queried_results)
-			}
+			})
 		}
 		if (typeof msg.type != "undefined") {
 			this.make('car').list$({car_type: msg.car_type}, function (err, list)  {
 				queried_results = my_slice(list, queried_results)
-			}
+			})
 		}
 		if (typeof msg.price != "undefined") {
 			this.make('car').list$(function (err, list)  {
@@ -62,7 +61,7 @@ module.exports = function car_service(options) {
 					}
 				}
 				queried_results = result.slice(0);
-			}
+			})
 		}
 		if (typeof msg.size != "undefined") {
 			this.make('car').list$(function (err, list)  {
@@ -74,7 +73,7 @@ module.exports = function car_service(options) {
 					}
 				}
 				queried_results = result.slice(0);
-			}
+			})
 		}
 		respond(null,queried_results)
 	})
@@ -102,7 +101,7 @@ module.exports = function car_service(options) {
 					}
 				}
 				return true;
-			}
-		}
+			})
+		})
 	}
 }

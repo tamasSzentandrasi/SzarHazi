@@ -12,8 +12,8 @@ module.exports = function flight_service(options) {
 					return respond( false )
 				}
 			}
-		}
-	}
+		})
+	})
 	this.add('role:flight,cmd:add', function(msg, respond) {
 		var seats = []
 		for ( i = 0; i < msg.levels; i++) {
@@ -26,14 +26,14 @@ module.exports = function flight_service(options) {
 		this
 			.make( 'flight' )
 			.data$({
-				flight_id: msg.flight_id
-				from: msg.from
-				to: msg.to
-				datetime: msg.datetime
-				price: msg.price
-				levels: msg.levels
-				width: msg.width
-				length: msg.length
+				flight_id: msg.flight_id,
+				from: msg.from,
+				to: msg.to,
+				datetime: msg.datetime,
+				price: msg.price,
+				levels: msg.levels,
+				width: msg.width,
+				length: msg.length,
 				board: seats
 			})
 			.save$( function( err, response) {
@@ -43,19 +43,19 @@ module.exports = function flight_service(options) {
 			})
 	})
 	this.add('role:flight,cmd:remove', function(msg, respond) {
-		this.make('flight').remove#(msg.flight_id, respond)
+		this.make('flight').remove$(msg.flight_id, respond)
 	})
 	this.add('role:flight,cmd:query', function(msg, respond) {
 		var queried_results = []
 		if (typeof msg.from != "undefined") {
 			this.make('flight').list$({from: msg.from}, function (err, list)  {
 				queried_results = my_slice(list, queried_results)
-			}
+			})
 		}
 		if (typeof msg.to != "undefined") {
 			this.make('flight').list$({to: msg.to}, function (err, list)  {
 				queried_results = my_slice(list, queried_results)
-			}
+			})
 		}
 		if (typeof msg.reservation_id != "undefined") {
 			this.make('flight').list$(function (err, list)  {
@@ -73,7 +73,7 @@ module.exports = function flight_service(options) {
 					}
 				}
 				queried_results = result.slice(0);
-			}
+			})
 		}
 		if (typeof msg.datetime != "undefined") {
 			this.make('flight').list$(function (err, list)  {
@@ -85,7 +85,7 @@ module.exports = function flight_service(options) {
 					}
 				}
 				queried_results = result.slice(0);
-			}
+			})
 		}
 		if (typeof msg.price != "undefined") {
 			this.make('flight').list$(function (err, list)  {
@@ -97,7 +97,7 @@ module.exports = function flight_service(options) {
 					}
 				}
 				queried_results = newlist.slice(0);
-			}
+			})
 		}
 		respond(null,queried_results)
 	})

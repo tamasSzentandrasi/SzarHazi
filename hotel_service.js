@@ -8,9 +8,9 @@ module.exports = function hotel_service(options) {
 					this.make('reservations')
 						.data$({
 								hotel: chosen_hotel.name,
-								room_id: i
-								res_from: msg.from
-								res_to: msg.to
+								room_id: i,
+								res_from: msg.from,
+								res_to: msg.to,
 								reservation_id: msg.reservation_id
 						})
 						.save$( function( err, response) {
@@ -21,8 +21,8 @@ module.exports = function hotel_service(options) {
 			}
 			respond(null, false);
 			
-		}
-	}
+		})
+	})
 	this.add('role:hotel,cmd:add', function(msg, respond) {
 		var room_array = []
 		for ( i = 0; i < msg.rooms.length; i++) {
@@ -31,11 +31,11 @@ module.exports = function hotel_service(options) {
 		this
 			.make( 'hotel' )
 			.data$({
-				hotel_id: msg.hotel_id
-				hotel_name: msg.hotel_name
-				city: msg.city
-				price: msg.price
-				rooms: room_array
+				hotel_id: msg.hotel_id,
+				hotel_name: msg.hotel_name,
+				city: msg.city,
+				price: msg.price,
+				rooms: room_array,
 			})
 			.save$( function( err, response) {
 				if (err) return respond(err);
@@ -44,19 +44,19 @@ module.exports = function hotel_service(options) {
 			})
 	})
 	this.add('role:hotel,cmd:remove', function(msg, respond) {
-		this.make('hotel').remove#(msg.hotel_id, respond);
+		this.make('hotel').remove$(msg.hotel_id, respond);
 	})
 	this.add('role:hotel,cmd:query', function(msg, respond) {
 		var queried_results = [];
 		if (typeof msg.from != "undefined") {
 			this.make('hotel').list$({city: msg.city}, function (err, list)  {
 				queried_results = my_slice(list, queried_results);
-			}
+			})
 		}
 		if (typeof msg.to != "undefined") {
 			this.make('hotel').list$({hotel_name: msg.hotel_name}, function (err, list)  {
 				queried_results = my_slice(list, queried_results);
-			}
+			})
 		}
 		if (typeof msg.price != "undefined") {
 			this.make('hotel').list$(function (err, list)  {
@@ -74,7 +74,7 @@ module.exports = function hotel_service(options) {
 					}
 				}
 				queried_results = result.slice(0);
-			}
+			})
 		}
 		respond(null,queried_results);
 	})
@@ -104,8 +104,8 @@ module.exports = function hotel_service(options) {
 					} 
 				}
 				return true;
-			}
-		}
+			})
+		})
 	}
 		
 }
