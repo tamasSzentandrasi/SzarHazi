@@ -99,6 +99,25 @@ module.exports = function flight_service(options) {
 				queried_results = newlist.slice(0);
 			})
 		}
+		if (typeof msg.seats != "undefined") {
+			this.make('flight').list$(function(err, list) {
+				newlist = my_slice(list, queried_results)
+				result = []
+				free_seats = 0
+				required_seats = Number(msg.seats).valueOf()
+				for (i=0; i<newlist.length; i++) {
+					for (j=0; j<newlist[i].board.length; j++) {
+						if (newlist[i].board.length[j] == 0) {
+							free_seats++
+						}
+						if (!(free_seats < required_seats)) {
+							result.push(newlist[i])
+							break;
+						}
+					}
+				}
+			})
+		}
 		respond(null,queried_results)
 	})
 

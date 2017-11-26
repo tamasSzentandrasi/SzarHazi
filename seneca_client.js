@@ -16,5 +16,5 @@ var app = Express()
 
 var seneca = require('seneca')()
       .use(SenecaWeb, senecaWebConfig )
-      .use('api')
+      .use('booking_service')
       .client( { type:'tcp', pin:'role:book' } )

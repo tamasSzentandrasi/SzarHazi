@@ -35,7 +35,7 @@ module.exports = function hotel_service(options) {
 				hotel_name: msg.hotel_name,
 				city: msg.city,
 				price: msg.price,
-				rooms: room_array,
+				rooms: room_array
 			})
 			.save$( function( err, response) {
 				if (err) return respond(err);
@@ -66,6 +66,24 @@ module.exports = function hotel_service(options) {
 					found = false;
 					for (j = 0; j < newlist[i].rooms.length; j++) {
 						if (newlist[i].rooms[j].price < msg.price) {
+							found = true;
+						}
+					}
+					if (found) {
+						result.push(newlist[i]);
+					}
+				}
+				queried_results = result.slice(0);
+			})
+		}
+		if (typeof msg.size != "undefined") {
+			this.make('hotel').list$(function (err, list)  {
+				newlist = my_slice(list, queried_results);
+				result = [];
+				for (i = 0; i< newlist.length; i++) {
+					found = false;
+					for (j = 0; j < newlist[i].rooms.length; j++) {
+						if (newlist[i].rooms[j].size < msg.size) {
 							found = true;
 						}
 					}

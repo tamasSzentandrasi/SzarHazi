@@ -8,54 +8,90 @@ module.exports = function booking_service(options) {
   this.add('role:book,cmd:reserve,car:true,hotel:true', function reserve(msg, respond) {
 	flight_service.act('role:flight', {
 		cmd:'reserve',
-		id:msg.id,
-		reservation_number:msg.reserve_num,
-		seats:msg.seats,
-		date:msg.date_set}, flight_answer)
+		flight_id: msg.flight_id,
+		from: msg.from,
+		to: msg.to,
+		datetime: msg.datetime,
+		price: msg.price,
+		levels: msg.levels,
+		width: msg.width,
+		length: msg.length,
+		reservation_id: msg.reservation_id}, flight_answer)
 	car_service.act('role:car', {
 		cmd:'reserve',
-		id:msg.car_id,
-		reservation_number:msg.reserve_num,
-		date:msg.date_set,
-		target_location:msg.hotel_id}, car_answer)
+		car_id: msg.car_id,
+		reservation_id: msg.reservation_id,
+		reservation_count: msg.reservation_count,
+		from: msg.from,
+		to: msg.to}, car_answer)
 	hotel_service.act('role:hotel', {
 		cmd:'reserve',
-		id:msg.hotel_id,
-		reservation_number:msg.reserve_num,
-		date:msg.date_set,
-		target_rooms:msg.hotel_rooms}, hotel_answer)
+		hotel_id: msg.hotel_id,
+		room: msg.room,
+		reservation_id: msg.reservation_id,
+		reservation_count: msg.reservation_count,
+		from: msg.from,
+		to: msg.to}, hotel_answer)
     respond(null, { answer: flight_answer && car_answer && hotel_answer })
   })
   
   this.add('role:book,cmd:reserve,car:false,hotel:true', function reserve(msg, respond) {
 	flight_service.act('role:flight', {
 		cmd:'reserve',
-		id:msg.id,
-		reservation_number:msg.reserve_num,
-		seats:msg.seats,
-		date:msg.date_set}, flight_answer)
+		flight_id: msg.flight_id,
+		from: msg.from,
+		to: msg.to,
+		datetime: msg.datetime,
+		price: msg.price,
+		levels: msg.levels,
+		width: msg.width,
+		length: msg.length,
+		reservation_id: msg.reservation_id}, flight_answer)
 	hotel_service.act('role:hotel', {
 		cmd:'reserve',
-		id:msg.hotel_id,
-		reservation_number:msg.reserve_num,
-		date:msg.date_set,
-		target_rooms:msg.hotel_rooms}, hotel_answer)
+		hotel_id: msg.hotel_id,
+		room: msg.room,
+		reservation_id: msg.reservation_id,
+		reservation_count: msg.reservation_count,
+		from: msg.from,
+		to: msg.to}, hotel_answer)
     respond(null, { answer: flight_answer && hotel_answer })
   })
   
-  //this.add('role:book,cmd:reserve,car:true,hotel:false', function reserve(msg, respond) {
-  //	flight_service.act({'cmd:reserve'}
-  //	car_service.act({'cmd:reserve'}
-  //  respond(null, { answer: flight_answer && car_answer })
-  //})
+  this.add('role:book,cmd:reserve,car:true,hotel:false', function reserve(msg, respond) {
+  	flight_service.act('role:flight', {
+		cmd:'reserve',
+		flight_id: msg.flight_id,
+		from: msg.from,
+		to: msg.to,
+		datetime: msg.datetime,
+		price: msg.price,
+		levels: msg.levels,
+		width: msg.width,
+		length: msg.length,
+		reservation_id: msg.reservation_id}, flight_answer)
+  	car_service.act('role:car', {
+		cmd:'reserve',
+		car_id: msg.car_id,
+		reservation_id: msg.reservation_id,
+		reservation_count: msg.reservation_count,
+		from: msg.from,
+		to: msg.to}, car_answer)
+    respond(null, { answer: flight_answer && car_answer })
+  })
   
   this.add('role:book,cmd:reserve,car:false,hotel:false', function reserve(msg, respond) {
 	flight_service.act('role:flight', {
 		cmd:'reserve',
-		id:msg.id,
-		reservation_number:msg.reserve_num,
-		seats:msg.seats,
-		date:msg.date_set}, flight_answer)
+		flight_id: msg.flight_id,
+		from: msg.from,
+		to: msg.to,
+		datetime: msg.datetime,
+		price: msg.price,
+		levels: msg.levels,
+		width: msg.width,
+		length: msg.length,
+		reservation_id: msg.reservation_id}, flight_answer)
     respond(null, { answer: flight_answer})
   })
 
@@ -73,31 +109,36 @@ module.exports = function booking_service(options) {
   this.add('role:book,cmd:add,flight:true', function add_elem(msg, respond) {
 	flight_service.act('role:flight', {
 		cmd:'add',
-		id:msg.id,
-		from_town:msg.from_city,
-		to_town:msg.to_city
-		seats:msg.seats,
-		date:msg.date_set
-		price_set:msg.price_set}, flight_answer)
+		flight_id: msg.flight_id,
+		from: msg.from,
+		to: msg.to,
+		datetime: msg.datetime,
+		price: msg.price,
+		levels: msg.levels,
+		width: msg.width,
+		length: msg.length,}, flight_answer)
     respond(null, { answer: flight_answer })
   })
   
   this.add('role:book,cmd:add,car:true', function add_elem(msg, respond) {
 	car_service.act('role:car', {
 		cmd:'add',
-		id:msg.car_id,
-		type:msg.car_type,
-		size:msg.car_size,
-		price:msg.price_set}, car_answer)
+		car_id: msg.car_id,
+		car_type: msg.car_type,
+		city: msg.city,
+		size: msg.size,
+		price: msg.price}, car_answer)
     respond(null, { answer: car_answer })
   })
   
   this.add('role:book,cmd:add,hotel:true', function add_elem(msg, respond) {
 	hotel_service.act('role:hotel', {
 		cmd:'add',
-		id:msg.hotel_id,
-		name:msg.hotel_name,
-		rooms:msg.hotel_rooms}, hotel_answer)
+		hotel_id: msg.hotel_id,
+		hotel_name: msg.hotel_name,
+		city: msg.city,
+		price: msg.price,
+		rooms: msg.rooms}, hotel_answer)
     respond(null, { answer: hotel_answer })
   })
 
@@ -117,21 +158,21 @@ module.exports = function booking_service(options) {
   this.add('role:book,cmd:remove,flight:true', function remove_elem(msg, respond) {
 	flight_service.act('role:flight', {
 		cmd:'remove',
-	id:msg.id}, flight_answer)
+		flight_id:msg.flight_id}, flight_answer)
     respond(null, { answer: flight_answer })
   })
   
   this.add('role:book,cmd:remove,car:true', function remove_elem(msg, respond) {
 	car_service.act('role:car', {
 		cmd:'remove',
-	id:msg.car_id}, car_answer)
+		car_id:msg.car_id}, car_answer)
     respond(null, { answer: car_answer })
   })
   
   this.add('role:book,cmd:remove,hotel:true', function remove_elem(msg, respond) {
 	hotel_service.act('role:hotel', {
 		cmd:'remove',
-  id:msg.hotel_id}, hotel_answer)
+		hotel_id:msg.hotel_id}, hotel_answer)
     respond(null, { answer: hotel_answer })
   })
 
@@ -151,26 +192,28 @@ module.exports = function booking_service(options) {
   this.add('role:book,cmd:query,flight:true', function query(msg, respond) {
 	  flight_service.act('role:flight', {
 		cmd:'query',
-		from_town:msg.from_city,
-		to_town:msg.to_city}, flight_answer)
+		from: msg.from,
+		to: msg.to,
+		price: msg.price,
+		reservation_id:msg.reservation_id}, flight_answer)
 	  respond(null, {answer:flight_answer })
   })
   
   this.add('role:book,cmd:query,flight:true,date:true', function query(msg, respond) {
 	  flight_service.act('role:flight', {
 		cmd:'query',
-		from_town:msg.from_city,
-		to_town:msg.to_city,
-	  date:msg.date}, flight_answer)
+		from: msg.from,
+		to: msg.to,
+		datetime: msg.datetime}, flight_answer)
 	  respond(null, {answer:flight_answer })
   })
   
   this.add('role:book,cmd:query,flight:true,date:true,seats:true', function query(msg, respond) {
 	  flight_service.act('role:flight', {
 		cmd:'query',
-		from_town:msg.from_city,
-		to_town:msg.to_city,
-		date:msg.date,
+		from: msg.from,
+		to: msg.to,
+		datetime: msg.datetime,
 		seats:msg.seats}, flight_answer)
 	  respond(null, {answer:flight_answer })
   })
@@ -178,23 +221,23 @@ module.exports = function booking_service(options) {
   this.add('role:book,cmd:query,flight:true,date:true,seats:true,price:true', function query(msg, respond) {
 	  flight_service.act('role:flight', {
 		cmd:'query',
-		from_town:msg.from_city,
-		to_town:msg.to_city,
-		date:msg.date,
+		from: msg.from,
+		to: msg.to,
+		datetime: msg.datetime,
 		seats:msg.seats,
-		price_set:msg.price_cap}, flight_answer)
+		price:msg.price}, flight_answer)
 	  respond(null, {answer:flight_answer })
   })
   
   this.wrap('role:book,cmd:query, flight:true', function (msg, respond) {
     if (msg.date == "true") {
-		msg.date_set  = Date(msg.date_set)
+		msg.datetime = Date(msg.datetime)
 	}
 	if (msg.seats == "true") {
-		msg.seat_count = Number(msg.seat_count).valueOf()
+		msg.seats = Number(msg.seats).valueOf()
 	}
 	if (msg.price == "true") {
-		msg.price_cap = Number(msg.price_cap).valueOf()
+		msg.price = Number(msg.price).valueOf()
 	}
     this.prior(msg, respond)
   })
@@ -202,14 +245,14 @@ module.exports = function booking_service(options) {
   this.add('role:book,cmd:query,car:true', function query(msg, respond) {
 	  car_service.act('role:car', {
 		cmd:'query',
-		in_town:msg.to_city}, car_answer)
+		city:msg.to_city}, car_answer)
 	  respond(null, {answer:car_answer })
   })
   
   this.add('role:book,cmd:query,car:true,date:true', function query(msg, respond) {
 	  car_service.act('role:car', {
 		cmd:'query',
-		in_town:msg.to_city,
+		city:msg.to_city,
 		date:msg.date}, car_answer)
 	  respond(null, {answer:car_answer })
   })
@@ -230,55 +273,65 @@ module.exports = function booking_service(options) {
   this.add('role:book,cmd:query,hotel:true', function query(msg, respond) {
 	  hotel_service.act('role:hotel', {
 		cmd:'query',
-		in_town:msg.to_city}, hotel_answer)
+		city:msg.city, 
+		hotel_name: msg.hotel_name}, hotel_answer)
 	  respond(null, {answer:hotel_answer })
   })
   
   this.add('role:book,cmd:query,hotel:true,date:true', function query(msg, respond) {
 	  hotel_service.act('role:hotel', {
 		cmd:'query',
-		in_town:msg.to_city,
-		date:msg.date}, hotel_answer)
+		city:msg.city, 
+		hotel_name: msg.hotel_name,
+		from: msg.from,
+		to:msg.to}, hotel_answer)
 	  respond(null, {answer:hotel_answer })
   })
   
   this.add('role:book,cmd:query,hotel:true,date:true,multiple:true', function query(msg, respond) {
 	  hotel_service.act('role:hotel', {
 		cmd:'query',
-		in_town:msg.to_city,
-		date:msg.date,
-		amount:msg.amount}, hotel_answer)
+		city:msg.city, 
+		hotel_name: msg.hotel_name,
+		from: msg.from,
+		to:msg.to,
+		size:msg.size}, hotel_answer)
 	  respond(null, {answer:hotel_answer })
   })
   
   this.add('role:book,cmd:query,hotel:true,date:true,price:true', function query(msg, respond) {
 	  hotel_service.act('role:hotel', {
 		cmd:'query',
-		in_town:msg.to_city,
-		date:msg.date,
-		price_cap:msg.price_set}, hotel_answer)
+		city:msg.city, 
+		hotel_name: msg.hotel_name,
+		from: msg.from,
+		to:msg.to,
+		price:msg.price}, hotel_answer)
 	  respond(null, {answer:hotel_answer })
   })
   
   this.add('role:book,cmd:query,hotel:true,date:true,seats:true,price:true', function query(msg, respond) {
 	  hotel_service.act('role:hotel', {
 		cmd:'query',
-		in_town:msg.to_city,
-		date:msg.date,
-		amount:msg.amount,
-		price_cap:msg.price_set}, hotel_answer)
+		city:msg.city, 
+		hotel_name: msg.hotel_name,
+		from: msg.from,
+		to:msg.to,
+		price:msg.price,
+		size:msg.size}, hotel_answer)
 	  respond(null, {answer:hotel_answer })
   })
   
   this.wrap('role:book,cmd:query, hotel:true', function (msg, respond) {
     if (msg.date == "true") {
-		msg.date_set  = Date(msg.date_set)
+		msg.from = Date(msg.from)
+		msg.to = Date(msg.to)
 	}
 	if (msg.seats == "true") {
-		msg.seat_count = Number(msg.seat_count).valueOf()
+		msg.size = Number(msg.size).valueOf()
 	}
 	if (msg.price == "true") {
-		msg.price_cap = Number(msg.price_cap).valueOf()
+		msg.price = Number(msg.price).valueOf()
 	}
     this.prior(msg, respond)
   })
@@ -287,7 +340,7 @@ module.exports = function booking_service(options) {
 	  queried_result = []
 	  this.make('reservations').list$({reservation_id: msg.reservation_id}, function (err, list)  {
 		  queried_result = list
-	  }
+	  })
 	  respond(null, queried_result)
   })
   
@@ -305,19 +358,6 @@ module.exports = function booking_service(options) {
  //	  reservation_service.act({'cmd:query,date:true,seats:true,price:true'})
  //	  respond(null, {answer:reservation_answer })
   //})
-  
-  this.wrap('role:book,cmd:query, reservation:true', function (msg, respond) {
-    if (msg.date == "true") {
-		msg.date_set  = Date(msg.date_set)
-	}
-	if (msg.seats == "true") {
-		msg.seat_count = Number(msg.seat_count).valueOf()
-	}
-	if (msg.price == "true") {
-		msg.price_cap = Number(msg.price_cap).valueOf()
-	}
-    this.prior(msg, respond)
-  })
   
   function my_slice(given_list, already_chosen) {
 		queried_list = []

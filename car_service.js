@@ -3,7 +3,7 @@ module.exports = function car_service(options) {
 		this.make( 'car' ).load$(msg.car_id, function( err, chosen_car) {
 			if( err ) return respond( false )
 						
-			if (!(chosen_car.size < msg.reservation_count) && get_ready_state(chosen_car, msg.datetime))  {
+			if (!(chosen_car.size < msg.reservation_count) && get_ready_state(chosen_car, msg.from, msg.to))  {
 					this.make('reservations')
 						.data$({
 								car_id: chosen_car,
